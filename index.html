@@ -3,76 +3,261 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OpenAPI YAML учебник (Swagger Editor)</title>
+  <title>OpenAPI (Swagger) — учебник для джуна-стажёра</title>
   <style>
-    :root { --bg:#0b1020; --fg:#e6edf3; --muted:#9aa4b2; --card:#111a33; --link:#60a5fa; --border:#233055; }
-    body { font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:#0a0f1f; color:var(--fg); }
+    :root {
+      --bg: #0a0f1f;
+      --panel: #0b1020;
+      --card: #111a33;
+      --fg: #e6edf3;
+      --muted: #a7b0bf;
+      --border: #223055;
+      --link: #60a5fa;
+      --ok: rgba(34,197,94,.18);
+      --warn: rgba(251,191,36,.16);
+      --bad: rgba(239,68,68,.16);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.55;
+    }
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    .wrap { display:grid; grid-template-columns: 300px 1fr; gap: 0; min-height: 100vh; }
-    nav { position: sticky; top:0; align-self:start; height: 100vh; overflow:auto; padding: 18px; border-right: 1px solid var(--border); background: #070b17; }
-    nav h2 { margin: 6px 0 10px; font-size: 16px; color: #cbd5e1; }
-    nav ul { list-style: none; padding:0; margin:0 0 14px; }
-    nav li { margin: 6px 0; font-size: 14px; }
-    main { padding: 22px; max-width: 1100px; }
-    h1 { margin: 4px 0 10px; font-size: 28px; }
-    h2 { margin: 28px 0 10px; font-size: 22px; border-top: 1px solid var(--border); padding-top: 18px; }
-    h3 { margin: 18px 0 8px; font-size: 18px; color:#cbd5e1; }
+    .wrap {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: 100vh;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 18px;
+      border-right: 1px solid var(--border);
+      background: #070b17;
+    }
+    main {
+      padding: 22px;
+      max-width: 1180px;
+    }
+    h1 { font-size: 28px; margin: 6px 0 10px; }
+    h2 {
+      font-size: 22px;
+      margin: 30px 0 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
+    h3 { font-size: 18px; margin: 18px 0 8px; color: #cbd5e1; }
+    h4 { font-size: 15px; margin: 14px 0 6px; color: #cbd5e1; }
     p, li { color: #d7dde7; }
-    .note { background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.35); padding: 12px 14px; border-radius: 12px; margin: 10px 0; }
-    .warn { background: rgba(251,191,36,0.10); border: 1px solid rgba(251,191,36,0.35); padding: 12px 14px; border-radius: 12px; margin: 10px 0; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin: 12px 0; }
-    pre { background: var(--bg); border: 1px solid var(--border); padding: 12px 14px; border-radius: 14px; overflow:auto; }
-    code { font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; font-size: 13px; }
-    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 980px) { .wrap { grid-template-columns: 1fr; } nav { height:auto; position:relative; } }
-    .k { color:#93c5fd; }
-    .m { color: var(--muted); }
+    .muted { color: var(--muted); }
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(255,255,255,0.03);
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin: 12px 0;
+    }
+    .note, .warn, .bad, .ok {
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      margin: 10px 0;
+    }
+    .note { background: rgba(96,165,250,.12); border-color: rgba(96,165,250,.35); }
+    .ok { background: var(--ok); border-color: rgba(34,197,94,.35); }
+    .warn { background: var(--warn); border-color: rgba(251,191,36,.35); }
+    .bad { background: var(--bad); border-color: rgba(239,68,68,.35); }
+    pre {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 14px;
+      overflow: auto;
+      margin: 10px 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 13px;
+    }
+    nav h2 { font-size: 16px; margin: 8px 0 10px; color: #cbd5e1; }
+    nav ul { list-style: none; padding: 0; margin: 0 0 14px; }
+    nav li { margin: 6px 0; font-size: 14px; }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .grid3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+      color: #d7dde7;
+      font-size: 13px;
+    }
+    th { color: #cbd5e1; background: rgba(255,255,255,0.03); }
+    tr:last-child td { border-bottom: none; }
+    .kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.03);
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+    @media (max-width: 1020px) {
+      .wrap { grid-template-columns: 1fr; }
+      nav { position: relative; height: auto; }
+      .grid2, .grid3 { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <nav>
       <div class="card">
-        <div style="font-weight:700; margin-bottom:6px;">OpenAPI YAML учебник</div>
-        <div class="m" style="font-size:13px;">
-          <a href="https://yaml-train.onrender.com">Редактор swagger</a><br/>
-
+        <div style="font-weight:700; margin-bottom:6px;">OpenAPI (Swagger) — учебник</div>
+        <div class="muted" style="font-size:13px;">
+          Swagger Editor: <a href="/">/</a><br/>
+          Учебник: <a href="/">эта вкладка</a>
+        </div>
+        <div class="note" style="margin-top:10px;">
+          <b>Цель:</b> научиться писать спецификацию OpenAPI (API-first), чтобы документация и контракт были готовы
+          до написания кода.
         </div>
       </div>
 
       <h2>Оглавление</h2>
       <ul>
-        <li><a href="#start">1. Быстрый старт</a></li>
-        <li><a href="#yaml">2. YAML правила</a></li>
-        <li><a href="#info">3. info / servers / tags</a></li>
-        <li><a href="#paths">4. paths и операции</a></li>
-        <li><a href="#params">5. Parameters (path/query/header/cookie)</a></li>
-        <li><a href="#requestBody">6. requestBody</a></li>
-        <li><a href="#responses">7. responses и content-types</a></li>
-        <li><a href="#schemas">8. schemas (types, formats, required)</a></li>
-        <li><a href="#refs">9. Переиспользование и $ref</a></li>
-        <li><a href="#advancedSchemas">10. oneOf/anyOf/allOf, enum, nullable</a></li>
-        <li><a href="#errors">11. Ошибки и единый формат</a></li>
-        <li><a href="#pagination">12. Пагинация/фильтры/сортировка</a></li>
-        <li><a href="#auth">13. Авторизация (API key/Bearer/OAuth2)</a></li>
-        <li><a href="#files">14. Файлы (upload/download)</a></li>
-        <li><a href="#headers">15. Headers, cookies, cache, idempotency</a></li>
-        <li><a href="#webhooks">16. Callbacks / Webhooks</a></li>
-        <li><a href="#versioning">17. Версионирование и деприкации</a></li>
-        <li><a href="#quality">18. Качество: examples, описания, style</a></li>
-        <li><a href="#checklist">19. Чек-лист сдачи</a></li>
+        <li><a href="#intro">0. Что такое API-first</a></li>
+        <li><a href="#yaml">1. YAML: правила и типовые ошибки</a></li>
+        <li><a href="#skeleton">2. Минимальный скелет OpenAPI</a></li>
+        <li><a href="#root-tags">3. Корневые теги: что означает каждый</a></li>
+        <li><a href="#paths-ops">4. paths и операции (методы)</a></li>
+        <li><a href="#params">5. parameters: path/query/header/cookie</a></li>
+        <li><a href="#requestBody">6. requestBody: тело запроса</a></li>
+        <li><a href="#responses">7. responses: ответы и content-types</a></li>
+        <li><a href="#components">8. components: повторное использование</a></li>
+        <li><a href="#schemas">9. schemas: модели данных</a></li>
+        <li><a href="#refs">10. $ref и структура проекта</a></li>
+        <li><a href="#advanced">11. Продвинутое: enum/nullable/oneOf/allOf</a></li>
+        <li><a href="#auth">12. Security: API key / Bearer JWT / OAuth2</a></li>
+        <li><a href="#errors">13. Ошибки: единый формат и коды</a></li>
+        <li><a href="#pagination">14. Пагинация, фильтры, сортировка</a></li>
+        <li><a href="#files">15. Файлы: upload/download</a></li>
+        <li><a href="#quality">16. Качество контракта: naming, examples, descriptions</a></li>
+        <li><a href="#checklist">17. Чек-лист перед сдачей</a></li>
+        <li><a href="#assignment">18. Задание (15 методов + несколько окружений)</a></li>
       </ul>
 
-      <div class="note">
-        Совет: если что-то “краснеет” в Editor — чаще всего проблема в <b>отступах</b> или кавычках у кодов ответов (<code>'200'</code>).
+      <div class="warn">
+        <b>Важно:</b> если Swagger Editor подсвечивает ошибки — 80% случаев это <b>отступы</b> или неверная структура.
       </div>
     </nav>
 
     <main>
-      <h1 id="start">1) Быстрый старт</h1>
-      <p>Минимальная спецификация OpenAPI 3.0.3:</p>
+      <h1 id="intro">0) Что такое API-first</h1>
+      <p>
+        <span class="badge">API-first</span>
+        Это подход, когда вы сначала описываете контракт API в OpenAPI (YAML), а уже потом пишете реализацию.
+      </p>
 
+      <div class="card">
+        <h3>Зачем это нужно</h3>
+        <ul>
+          <li><b>Frontend и backend не блокируют друг друга:</b> фронт может начать интеграцию по контракту.</li>
+          <li><b>Документация всегда актуальна:</b> она генерируется из спецификации.</li>
+          <li><b>Меньше “плавающих” договорённостей:</b> параметры, форматы и ошибки описаны явно.</li>
+          <li><b>Можно генерировать код:</b> клиентов/серверные заглушки через генераторы (опционально).</li>
+        </ul>
+      </div>
+
+      <div class="note">
+        По сути OpenAPI — это “договор” между клиентом и сервером: что можно вызвать, какие поля передать, что вернётся.
+      </div>
+
+      <h2 id="yaml">1) YAML: правила и типовые ошибки</h2>
+      <p>YAML прост, но строг к пробелам.</p>
+
+      <table>
+        <tr>
+          <th>Правило</th>
+          <th>Почему важно</th>
+          <th>Пример</th>
+        </tr>
+        <tr>
+          <td>Отступы только пробелами</td>
+          <td>Табуляция ломает парсер</td>
+          <td><code>info:\n··title: ...</code></td>
+        </tr>
+        <tr>
+          <td>Обычно 2 пробела на уровень</td>
+          <td>Чтобы не путаться</td>
+          <td><code>paths:\n··/users:</code></td>
+        </tr>
+        <tr>
+          <td>Списки — через “-”</td>
+          <td>Иначе это будет объект</td>
+          <td><code>tags:\n··- name: Users</code></td>
+        </tr>
+        <tr>
+          <td>Коды ответов лучше строками</td>
+          <td>Во многих инструментах ожидаются строки</td>
+          <td><code>'200'</code>, <code>'404'</code></td>
+        </tr>
+      </table>
+
+      <div class="grid2">
+        <div class="card">
+          <h3>✅ Правильно</h3>
+          <pre><code>tags:
+  - name: Users
+  - name: Orders</code></pre>
+        </div>
+        <div class="card">
+          <h3>❌ Неправильно</h3>
+          <pre><code>tags:
+- name: Users
+ - name: Orders</code></pre>
+          <div class="muted">Во второй строке лишний пробел перед “-”.</div>
+        </div>
+      </div>
+
+      <h2 id="skeleton">2) Минимальный скелет OpenAPI</h2>
+      <p>Это минимум, чтобы Swagger Editor начал показывать структуру.</p>
       <pre><code>openapi: 3.0.3
 info:
   title: Demo API
@@ -85,116 +270,218 @@ paths:
         '200':
           description: OK</code></pre>
 
-      <div class="warn">
-        <b>Важно:</b> коды ответов в YAML лучше писать строками: <code>'200'</code>, <code>'404'</code>.
+      <div class="ok">
+        <b>Правило стажёра:</b> у каждой операции <u>обязательно</u> должны быть <code>summary</code> и <code>responses</code>.
       </div>
 
-      <h2 id="yaml">2) YAML правила</h2>
-      <ul>
-        <li>Отступы — пробелами (обычно 2).</li>
-        <li>Один уровень вложенности = одинаковый отступ.</li>
-        <li>Строки с двоеточием внутри лучше брать в кавычки.</li>
-        <li>Списки: <code>- item</code></li>
-      </ul>
+      <h2 id="root-tags">3) Корневые теги: что означает каждый</h2>
 
-      <div class="grid2">
-        <div class="card">
-          <h3>Правильно</h3>
-          <pre><code>tags:
-  - name: Students
-  - name: Courses</code></pre>
-        </div>
-        <div class="card">
-          <h3>Неправильно</h3>
-          <pre><code>tags:
-- name: Students
- - name: Courses</code></pre>
-          <div class="m">Вторая строка имеет “плавающий” отступ.</div>
-        </div>
+      <div class="card">
+        <h3><code>openapi</code></h3>
+        <p>Версия спецификации OpenAPI. Обычно используем <code>3.0.3</code>.</p>
+        <pre><code>openapi: 3.0.3</code></pre>
       </div>
 
-      <h2 id="info">3) info / servers / tags</h2>
-      <pre><code>openapi: 3.0.3
-info:
+      <div class="card">
+        <h3><code>info</code></h3>
+        <p>Метаданные API: название, версия, описание, контакты.</p>
+        <pre><code>info:
   title: Student Course API
-  version: 1.0.0
-  description: Учебный проект API-first
+  version: 1.2.0
+  description: Учебный API для проекта
+  contact:
+    name: Team A
+    email: team-a@example.com</code></pre>
+        <p class="muted">Версия в <code>info.version</code> — это версия API/контракта (не обязательно версия сервера).</p>
+      </div>
 
-servers:
+      <div class="card">
+        <h3><code>servers</code></h3>
+        <p>
+          Список окружений, куда можно отправлять запросы. В Swagger UI это переключатель.
+          Для учёбы — минимум 2–3 сервера.
+        </p>
+        <pre><code>servers:
   - url: https://api.example.com
-    description: Prod
+    description: Production
+  - url: https://api-dev.example.com
+    description: Development
   - url: http://localhost:3000
-    description: Dev
+    description: Local</code></pre>
+      </div>
 
-tags:
+      <div class="card">
+        <h3><code>tags</code></h3>
+        <p>
+          Категории для методов. Это не “технический” тег, а чисто для удобной навигации и структуры.
+        </p>
+        <pre><code>tags:
   - name: Students
-    description: Операции со студентами</code></pre>
+    description: Работа со студентами
+  - name: Courses
+    description: Работа с курсами
+  - name: Auth
+    description: Авторизация и токены</code></pre>
+      </div>
 
-      <h2 id="paths">4) paths и операции</h2>
-      <p><b>paths</b> — это маршруты. Внутри — методы: get/post/put/patch/delete.</p>
+      <div class="card">
+        <h3><code>paths</code></h3>
+        <p>
+          Самое важное: список маршрутов и HTTP-операций (get/post/put/patch/delete).
+          Именно здесь описываются “методы API”.
+        </p>
+        <pre><code>paths:
+  /students:
+    get: ...
+    post: ...
+  /students/{studentId}:
+    get: ...
+    put: ...
+    delete: ...</code></pre>
+      </div>
+
+      <div class="card">
+        <h3><code>components</code></h3>
+        <p>
+          Библиотека переиспользуемых “кусков”: схемы данных, параметры, ответы, securitySchemes и т.д.
+          Помогает не копировать одно и то же.
+        </p>
+        <pre><code>components:
+  schemas: {}
+  parameters: {}
+  responses: {}
+  securitySchemes: {}</code></pre>
+      </div>
+
+      <div class="card">
+        <h3><code>security</code></h3>
+        <p>
+          Глобальные требования авторизации для всех операций. Можно переопределять на уровне конкретного метода.
+        </p>
+        <pre><code>security:
+  - bearerAuth: []</code></pre>
+      </div>
+
+      <div class="card">
+        <h3><code>externalDocs</code> (опционально)</h3>
+        <p>Ссылка на внешнюю документацию (Notion/Confluence/README).</p>
+        <pre><code>externalDocs:
+  description: Архитектура и гайды
+  url: https://docs.example.com</code></pre>
+      </div>
+
+      <h2 id="paths-ops">4) paths и операции (методы)</h2>
+      <p>Каждый endpoint = путь + HTTP метод. Ниже пример CRUD для студентов.</p>
 
       <pre><code>paths:
   /students:
     get:
       tags: [Students]
-      summary: Список студентов
+      summary: Получить список студентов
+      operationId: listStudents
       responses:
         '200':
           description: OK
     post:
       tags: [Students]
       summary: Создать студента
+      operationId: createStudent
       responses:
         '201':
-          description: Created</code></pre>
+          description: Created
 
-      <div class="note">
-        Полезные поля операции: <code>operationId</code>, <code>summary</code>, <code>description</code>, <code>tags</code>, <code>parameters</code>, <code>requestBody</code>, <code>responses</code>, <code>security</code>.
-      </div>
-
-      <h2 id="params">5) Parameters (path/query/header/cookie)</h2>
-
-      <h3>Path параметр</h3>
-      <pre><code>paths:
   /students/{studentId}:
     get:
-      summary: Получить студента
-      parameters:
-        - name: studentId
-          in: path
-          required: true
-          schema:
-            type: integer
+      tags: [Students]
+      summary: Получить студента по ID
+      operationId: getStudent
       responses:
-        '200': { description: OK }</code></pre>
+        '200': { description: OK }
+        '404': { description: Not Found }</code></pre>
 
-      <h3>Query параметры</h3>
-      <pre><code>    get:
-      summary: Поиск студентов
-      parameters:
-        - name: q
-          in: query
-          required: false
-          schema: { type: string }
-          description: Строка поиска
-        - name: limit
-          in: query
-          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }</code></pre>
+      <div class="note">
+        <b>operationId</b> — полезен для генераторов кода и для уникальной идентификации операции. Делайте его уникальным и читабельным.
+      </div>
 
-      <h3>Header / Cookie</h3>
-      <pre><code>parameters:
+      <h3>Как выбрать статус-коды</h3>
+      <table>
+        <tr><th>Код</th><th>Когда использовать</th></tr>
+        <tr><td><code>200</code></td><td>Успешный ответ (GET/PUT/PATCH), возвращаем тело</td></tr>
+        <tr><td><code>201</code></td><td>Создание (POST), обычно возвращаем созданный объект</td></tr>
+        <tr><td><code>204</code></td><td>Успех без тела (DELETE или POST без результата)</td></tr>
+        <tr><td><code>400</code></td><td>Некорректный запрос (валидация, неверные параметры)</td></tr>
+        <tr><td><code>401</code></td><td>Не авторизован (нет/неверный токен)</td></tr>
+        <tr><td><code>403</code></td><td>Запрещено (нет прав)</td></tr>
+        <tr><td><code>404</code></td><td>Ресурс не найден</td></tr>
+        <tr><td><code>409</code></td><td>Конфликт (например, email уже занят)</td></tr>
+        <tr><td><code>500</code></td><td>Ошибка сервера</td></tr>
+      </table>
+
+      <h2 id="params">5) parameters: path/query/header/cookie</h2>
+      <p>Параметры — это то, что приходит не в теле JSON (кроме requestBody).</p>
+
+      <div class="card">
+        <h3>Path параметр (обязателен)</h3>
+        <pre><code>parameters:
+  - name: studentId
+    in: path
+    required: true
+    description: ID студента
+    schema:
+      type: integer
+      minimum: 1</code></pre>
+        <p class="muted">Если <code>in: path</code> — почти всегда <code>required: true</code>.</p>
+      </div>
+
+      <div class="card">
+        <h3>Query параметры (фильтры/пагинация/поиск)</h3>
+        <pre><code>parameters:
+  - name: q
+    in: query
+    required: false
+    description: Поисковая строка
+    schema: { type: string }
+  - name: limit
+    in: query
+    schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+  - name: offset
+    in: query
+    schema: { type: integer, minimum: 0, default: 0 }</code></pre>
+      </div>
+
+      <div class="card">
+        <h3>Header параметр (например корреляция/идемпотентность)</h3>
+        <pre><code>parameters:
   - name: X-Request-Id
     in: header
+    required: false
     schema: { type: string }
+    description: ID запроса для трассировки
+  - name: Idempotency-Key
+    in: header
+    required: false
+    schema: { type: string }
+    description: Защита от повторной отправки (обычно для POST)</code></pre>
+      </div>
+
+      <div class="card">
+        <h3>Cookie параметр (реже)</h3>
+        <pre><code>parameters:
   - name: session_id
     in: cookie
     schema: { type: string }</code></pre>
+      </div>
 
-      <h2 id="requestBody">6) requestBody</h2>
-      <p><b>requestBody</b> описывает тело запроса (обычно JSON).</p>
+      <h2 id="requestBody">6) requestBody: тело запроса</h2>
+      <p>
+        <b>requestBody</b> описывает JSON (или другой формат), который клиент отправляет в POST/PUT/PATCH.
+        Внутри всегда указываем <code>content</code> и <code>schema</code>.
+      </p>
 
       <pre><code>post:
+  tags: [Students]
   summary: Создать студента
+  operationId: createStudent
   requestBody:
     required: true
     content:
@@ -204,22 +491,34 @@ tags:
         examples:
           demo:
             value:
-              name: Ivan
-              email: ivan@example.com
+              name: "Иван"
+              email: "ivan@example.com"
+              age: 21
   responses:
     '201':
-      description: Created</code></pre>
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Student'</code></pre>
 
-      <h2 id="responses">7) responses и content-types</h2>
-      <p>Ответы привязаны к статус-кодам. Формат зависит от <code>content-type</code>.</p>
+      <div class="note">
+        <b>Совет:</b> создавайте отдельные схемы <code>StudentCreate</code> / <code>StudentUpdate</code>, не используйте одну и ту же схему везде.
+      </div>
+
+      <h2 id="responses">7) responses: ответы и content-types</h2>
+      <p>
+        В <code>responses</code> ключами являются HTTP статусы. Внутри: <code>description</code>, опционально <code>headers</code>,
+        и опционально <code>content</code> (если есть тело ответа).
+      </p>
 
       <pre><code>responses:
   '200':
     description: OK
     headers:
       X-Request-Id:
+        description: Корреляционный ID
         schema: { type: string }
-        description: Корреляционный id
     content:
       application/json:
         schema:
@@ -231,11 +530,49 @@ tags:
         schema:
           $ref: '#/components/schemas/Error'</code></pre>
 
-      <div class="note">
-        Популярные content-types: <code>application/json</code>, <code>multipart/form-data</code>, <code>application/octet-stream</code>, <code>text/plain</code>.
+      <div class="warn">
+        <b>Ошибка новичка:</b> забыть <code>content</code> у 200/201, если реально возвращается JSON.
+        Тогда UI покажет “пустой” ответ.
       </div>
 
-      <h2 id="schemas">8) schemas (types, formats, required)</h2>
+      <h3>Content-Types — что выбрать</h3>
+      <table>
+        <tr><th>Content-Type</th><th>Когда</th></tr>
+        <tr><td><code>application/json</code></td><td>Почти все обычные API</td></tr>
+        <tr><td><code>multipart/form-data</code></td><td>Загрузка файлов</td></tr>
+        <tr><td><code>application/octet-stream</code></td><td>Скачивание файла/байтов</td></tr>
+        <tr><td><code>text/plain</code></td><td>Простой текст (редко)</td></tr>
+      </table>
+
+      <h2 id="components">8) components: повторное использование</h2>
+      <p>
+        Если что-то повторяется — выносите в <code>components</code>.
+        Это делает спецификацию короче и аккуратнее.
+      </p>
+
+      <pre><code>components:
+  schemas:
+    Student: ...
+    Error: ...
+  parameters:
+    StudentId:
+      name: studentId
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+  responses:
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }</code></pre>
+
+      <h2 id="schemas">9) schemas: модели данных</h2>
+      <p>
+        Схемы описывают “форму” объектов, которые приходят/уходят.
+        Важно: <code>required</code> указывается на уровне объекта как список обязательных полей.
+      </p>
+
       <pre><code>components:
   schemas:
     Student:
@@ -247,59 +584,140 @@ tags:
         email: { type: string, format: email, example: "ivan@example.com" }
         age: { type: integer, minimum: 0, example: 21 }
         createdAt: { type: string, format: date-time }
+
     StudentCreate:
       type: object
       required: [name, email]
       properties:
-        name: { type: string }
+        name: { type: string, minLength: 2 }
         email: { type: string, format: email }
         age: { type: integer, minimum: 0 }</code></pre>
 
-      <h2 id="refs">9) Переиспользование и $ref</h2>
-      <p>Чтобы не копировать параметры/схемы — выноси в <code>components</code> и подключай через <code>$ref</code>.</p>
+      <div class="note">
+        <b>Про format:</b> это подсказка клиентам/инструментам. Частые форматы: <code>email</code>, <code>uuid</code>, <code>date</code>, <code>date-time</code>.
+      </div>
 
-      <pre><code>components:
-  parameters:
-    StudentId:
-      name: studentId
-      in: path
-      required: true
-      schema: { type: integer }
+      <h2 id="refs">10) $ref и структура проекта</h2>
+      <p>
+        <code>$ref</code> — ссылка на компонент. Это главный инструмент “не копировать”.
+      </p>
 
-paths:
+      <pre><code>schema:
+  $ref: '#/components/schemas/Student'</code></pre>
+
+      <div class="card">
+        <h3>Пример: переиспользуем StudentId</h3>
+        <pre><code>paths:
   /students/{studentId}:
     get:
       parameters:
-        - $ref: '#/components/parameters/StudentId'</code></pre>
+        - $ref: '#/components/parameters/StudentId'
+      responses:
+        '200':
+          description: OK</code></pre>
+      </div>
 
-      <h2 id="advancedSchemas">10) oneOf/anyOf/allOf, enum, nullable</h2>
+      <div class="warn">
+        <b>Важно:</b> путь в $ref должен быть точным, регистр букв важен.
+      </div>
 
-      <h3>enum</h3>
-      <pre><code>Status:
+      <h2 id="advanced">11) Продвинутое: enum/nullable/oneOf/allOf</h2>
+
+      <div class="grid2">
+        <div class="card">
+          <h3>enum</h3>
+          <p>Ограничивает значения поля конкретным набором.</p>
+          <pre><code>Status:
   type: string
   enum: [active, blocked, deleted]</code></pre>
-
-      <h3>nullable</h3>
-      <pre><code>middleName:
+        </div>
+        <div class="card">
+          <h3>nullable</h3>
+          <p>Поле может быть <code>null</code>. Полезно для необязательных строк.</p>
+          <pre><code>middleName:
   type: string
   nullable: true</code></pre>
+        </div>
+      </div>
 
-      <h3>oneOf (ровно один вариант)</h3>
-      <pre><code>Payment:
+      <div class="grid2">
+        <div class="card">
+          <h3>oneOf</h3>
+          <p>Ровно один вариант схемы (например разные способы оплаты).</p>
+          <pre><code>Payment:
   oneOf:
     - $ref: '#/components/schemas/CardPayment'
     - $ref: '#/components/schemas/CashPayment'</code></pre>
-
-      <h3>allOf (наследование/композиция)</h3>
-      <pre><code>StudentUpdate:
+        </div>
+        <div class="card">
+          <h3>allOf</h3>
+          <p>Композиция/“наследование” схем (добавляем поля к базовой).</p>
+          <pre><code>StudentUpdate:
   allOf:
     - $ref: '#/components/schemas/StudentCreate'
     - type: object
       properties:
-        name: { type: string, minLength: 2 }</code></pre>
+        age: { type: integer, minimum: 0 }</code></pre>
+        </div>
+      </div>
 
-      <h2 id="errors">11) Ошибки и единый формат</h2>
-      <p>Хорошая практика: один формат ошибки для всех 4xx/5xx.</p>
+      <div class="note">
+        Для стажёра достаточно уверенно владеть <code>enum</code>, <code>nullable</code>, <code>allOf</code>.
+        <code>oneOf</code> — опционально, но полезно.
+      </div>
+
+      <h2 id="auth">12) Security: API key / Bearer JWT / OAuth2</h2>
+
+      <h3>Bearer JWT (самый частый в учебных проектах)</h3>
+      <pre><code>components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []</code></pre>
+
+      <div class="card">
+        <h3>Отключить security для конкретного метода</h3>
+        <p>Например, логин и регистрация обычно без токена:</p>
+        <pre><code>paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Логин
+      security: []   # переопределили глобальное security
+      responses:
+        '200': { description: OK }</code></pre>
+      </div>
+
+      <h3>API key (например заголовок X-API-Key)</h3>
+      <pre><code>components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key</code></pre>
+
+      <h3>OAuth2 (скелет)</h3>
+      <pre><code>components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.example.com/authorize
+          tokenUrl: https://auth.example.com/token
+          scopes:
+            students:read: Read students
+            students:write: Write students</code></pre>
+
+      <h2 id="errors">13) Ошибки: единый формат и коды</h2>
+      <p>
+        Хороший API почти всегда возвращает ошибки в одном формате.
+        Это упрощает обработку на фронте и тестирование.
+      </p>
 
       <pre><code>components:
   schemas:
@@ -307,26 +725,43 @@ paths:
       type: object
       required: [code, message]
       properties:
-        code: { type: string, example: "not_found" }
-        message: { type: string, example: "Student not found" }
+        code: { type: string, example: "validation_error" }
+        message: { type: string, example: "Email is invalid" }
         details:
           type: array
           items:
             type: object
             properties:
-              field: { type: string }
-              issue: { type: string }
+              field: { type: string, example: "email" }
+              issue: { type: string, example: "must be a valid email" }</code></pre>
 
-responses:
+      <div class="card">
+        <h3>Подключаем Error в ответах</h3>
+        <pre><code>responses:
   '400':
     description: Bad Request
     content:
       application/json:
+        schema: { $ref: '#/components/schemas/Error' }
+  '404':
+    description: Not Found
+    content:
+      application/json:
+        schema: { $ref: '#/components/schemas/Error' }
+  '500':
+    description: Server Error
+    content:
+      application/json:
         schema: { $ref: '#/components/schemas/Error' }</code></pre>
+      </div>
 
-      <h2 id="pagination">12) Пагинация/фильтры/сортировка</h2>
+      <div class="warn">
+        <b>Совет:</b> хотя бы для ключевых методов опишите 400/401/404/500. Не обязательно для всех 15, но минимум должен быть.
+      </div>
 
-      <h3>Offset/Limit</h3>
+      <h2 id="pagination">14) Пагинация, фильтры, сортировка</h2>
+
+      <h3>Offset/Limit (проще всего)</h3>
       <pre><code>get:
   summary: Список студентов
   parameters:
@@ -348,63 +783,31 @@ responses:
               items:
                 type: array
                 items: { $ref: '#/components/schemas/Student' }
-              total: { type: integer, example: 123 }</code></pre>
+              total:
+                type: integer
+                example: 123</code></pre>
 
-      <h3>Фильтры и сортировка</h3>
+      <h3>Фильтры</h3>
       <pre><code>parameters:
   - name: status
     in: query
     schema: { $ref: '#/components/schemas/Status' }
+  - name: enrolledCourseId
+    in: query
+    schema: { type: integer, minimum: 1 }</code></pre>
+
+      <h3>Сортировка</h3>
+      <pre><code>parameters:
   - name: sort
     in: query
-    description: "Например: name,-createdAt"
+    description: "Например: name,-createdAt (минус = по убыванию)"
     schema: { type: string }</code></pre>
 
-      <h2 id="auth">13) Авторизация (API key/Bearer/OAuth2)</h2>
-
-      <h3>Bearer JWT</h3>
-      <pre><code>components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-security:
-  - bearerAuth: []
-
-paths:
-  /students:
-    get:
-      security:
-        - bearerAuth: []</code></pre>
-
-      <h3>API key</h3>
-      <pre><code>components:
-  securitySchemes:
-    apiKeyAuth:
-      type: apiKey
-      in: header
-      name: X-API-Key</code></pre>
-
-      <h3>OAuth2 (схема-скелет)</h3>
-      <pre><code>components:
-  securitySchemes:
-    oauth2:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://auth.example.com/authorize
-          tokenUrl: https://auth.example.com/token
-          scopes:
-            students:read: Read students
-            students:write: Write students</code></pre>
-
-      <h2 id="files">14) Файлы (upload/download)</h2>
+      <h2 id="files">15) Файлы: upload/download</h2>
 
       <h3>Upload (multipart/form-data)</h3>
       <pre><code>post:
-  summary: Загрузить аватар
+  summary: Загрузить аватар студента
   requestBody:
     required: true
     content:
@@ -431,109 +834,254 @@ paths:
             type: string
             format: binary</code></pre>
 
-      <h2 id="headers">15) Headers, cookies, cache, idempotency</h2>
+      <h2 id="quality">16) Качество контракта: naming, examples, descriptions</h2>
 
-      <h3>Идемпотентность (например для POST платежа)</h3>
-      <pre><code>post:
-  summary: Создать платёж
-  parameters:
-    - name: Idempotency-Key
-      in: header
-      required: true
-      schema: { type: string }
-      description: Уникальный ключ для защиты от повторной отправки</code></pre>
+      <div class="grid2">
+        <div class="card">
+          <h3>Нейминг</h3>
+          <ul>
+            <li><b>schemas:</b> <code>Student</code>, <code>StudentCreate</code>, <code>StudentUpdate</code></li>
+            <li><b>operationId:</b> глагол+сущность: <code>listStudents</code>, <code>getStudent</code></li>
+            <li><b>поля:</b> camelCase: <code>createdAt</code>, <code>enrolledCourses</code></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Примеры (examples)</h3>
+          <p>Примеры ускоряют понимание API в 2–3 раза.</p>
+          <pre><code>name:
+  type: string
+  example: "Иван"
 
-      <h3>Rate limit (описание через headers)</h3>
-      <pre><code>responses:
+responses:
   '200':
-    description: OK
-    headers:
-      X-RateLimit-Limit:
-        schema: { type: integer }
-      X-RateLimit-Remaining:
-        schema: { type: integer }
-      X-RateLimit-Reset:
-        schema: { type: integer }</code></pre>
-
-      <h2 id="webhooks">16) Callbacks / Webhooks</h2>
-
-      <h3>Webhooks (OpenAPI 3.1 имеет верхнеуровневый webhooks; в 3.0 часто используют callbacks)</h3>
-      <pre><code>paths:
-  /subscriptions:
-    post:
-      summary: Подписаться на событие
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [callbackUrl]
-              properties:
-                callbackUrl: { type: string, format: uri }
-      callbacks:
-        onEvent:
-          '{$request.body#/callbackUrl}':
-            post:
-              summary: Событие
-              requestBody:
-                required: true
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        type: { type: string }
-                        payload: { type: object }
-              responses:
-                '204': { description: Received }</code></pre>
-
-      <h2 id="versioning">17) Версионирование и деприкации</h2>
-
-      <h3>Версия в URL</h3>
-      <pre><code>servers:
-  - url: https://api.example.com/v1</code></pre>
-
-      <h3>Deprecated</h3>
-      <pre><code>/students:
-  get:
-    deprecated: true
-    summary: (устарело) Список студентов</code></pre>
-
-      <h2 id="quality">18) Качество: examples, описания, style</h2>
-      <ul>
-        <li>Давай <code>summary</code> и <code>description</code> почти везде.</li>
-        <li>Добавляй <code>example</code>/<code>examples</code> в схемы и ответы.</li>
-        <li>Делай единые названия: <code>StudentCreate</code>, <code>StudentUpdate</code>, <code>Error</code>.</li>
-        <li>Старайся не плодить разные форматы ошибок.</li>
-      </ul>
-
-      <div class="card">
-        <h3>Пример с examples</h3>
-        <pre><code>responses:
-  '200':
-    description: OK
     content:
       application/json:
-        schema: { $ref: '#/components/schemas/Student' }
         examples:
-          alice:
-            value: { id: 1, name: "Alice", email: "alice@example.com" }
-          bob:
-            value: { id: 2, name: "Bob", email: "bob@example.com" }</code></pre>
+          demo:
+            value: { id: 1, name: "Иван" }</code></pre>
+        </div>
       </div>
 
-      <h2 id="checklist">19) Чек-лист сдачи</h2>
+      <div class="note">
+        <b>Правило:</b> если поле важно — добавь <code>description</code> и <code>example</code>.
+        Если метод важный — добавь хотя бы один пример ответа.
+      </div>
+
+      <h2 id="checklist">17) Чек-лист перед сдачей</h2>
       <ul>
-        <li><b>Спека валидна</b> (Editor не показывает ошибок).</li>
-        <li>Есть <code>info</code>, <code>servers</code> (хотя бы один), <code>tags</code> (по группам).</li>
-        <li>У всех операций есть <code>summary</code> и нормальные <code>responses</code>.</li>
-        <li>Сущности вынесены в <code>components/schemas</code>, повторяемые параметры — в <code>components/parameters</code>.</li>
-        <li>Есть единый формат <code>Error</code> и описаны 400/404/500 (минимум).</li>
-        <li>Если требуется авторизация — есть <code>securitySchemes</code> и <code>security</code>.</li>
-        <li>Есть примеры данных (<code>example</code>/<code>examples</code>).</li>
+        <li>Swagger Editor не показывает ошибок (валидный YAML и OpenAPI).</li>
+        <li>Есть <code>info</code>, минимум 3 <code>servers</code>, есть <code>tags</code>.</li>
+        <li>Описано минимум 15 операций (методов) в <code>paths</code>.</li>
+        <li>У каждой операции есть <code>summary</code> и корректные <code>responses</code>.</li>
+        <li>Есть схемы в <code>components/schemas</code> и вы их используете через <code>$ref</code>.</li>
+        <li>Есть единый формат ошибки <code>Error</code> и описаны основные ошибки (400/401/404/500 минимум для ключевых методов).</li>
+        <li>Добавлены примеры (<code>example</code>/<code>examples</code>) для запросов/ответов.</li>
       </ul>
 
+      <div class="ok">
+        <b>Если сомневаешься:</b> лучше меньше магии, больше явных схем и примеров.
+        Хорошая спецификация читается как инструкция.
+      </div>
+
+      <h2 id="assignment">18) Задание (15 методов + несколько окружений)</h2>
+      <div class="card">
+        <h3>Цель</h3>
+        <p>
+          Описать учебное API для системы “Студенты и Курсы” в стиле API-first:
+          валидная OpenAPI-спецификация + 3+ окружения.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Требования к окружениям (минимум 3)</h3>
+        <pre><code>servers:
+  - url: https://api.example.com
+    description: Production
+  - url: https://api-dev.example.com
+    description: Development
+  - url: http://localhost:3000
+    description: Local</code></pre>
+        <p class="muted">Можно добавить 4-е окружение (staging/test) — будет плюсом.</p>
+      </div>
+
+      <div class="card">
+        <h3>Требования к методам (минимум 15 разных операций)</h3>
+        <p>Ниже — рекомендуемый набор. Можно менять имена, но логика должна сохраняться.</p>
+
+        <h4>Students (6 методов)</h4>
+        <ol>
+          <li><code>GET /students</code> — список (с пагинацией)</li>
+          <li><code>POST /students</code> — создать</li>
+          <li><code>GET /students/{studentId}</code> — получить по id</li>
+          <li><code>PUT /students/{studentId}</code> — обновить полностью</li>
+          <li><code>PATCH /students/{studentId}</code> — обновить частично</li>
+          <li><code>DELETE /students/{studentId}</code> — удалить</li>
+        </ol>
+
+        <h4>Courses (5 методов)</h4>
+        <ol>
+          <li><code>GET /courses</code></li>
+          <li><code>POST /courses</code></li>
+          <li><code>GET /courses/{courseId}</code></li>
+          <li><code>PUT /courses/{courseId}</code></li>
+          <li><code>DELETE /courses/{courseId}</code></li>
+        </ol>
+
+        <h4>Enrollment / связь студент-курс (2 метода)</h4>
+        <ol>
+          <li><code>POST /students/{studentId}/courses/{courseId}</code> — записать на курс</li>
+          <li><code>DELETE /students/{studentId}/courses/{courseId}</code> — отписать</li>
+        </ol>
+
+        <h4>Auth (2 метода)</h4>
+        <ol>
+          <li><code>POST /auth/login</code> — логин (возвращает токен)</li>
+          <li><code>GET /auth/me</code> — получить текущего пользователя</li>
+        </ol>
+
+        <div class="ok">
+          Это уже <b>17 операций</b>. Можно сделать минимум 15, но лучше придерживаться полного набора.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Обязательные элементы спецификации</h3>
+        <ul>
+          <li><b>tags</b> — минимум 3 тега: Students, Courses, Auth</li>
+          <li><b>components/schemas</b> — минимум: Student, StudentCreate, StudentUpdate, Course, Error, Token</li>
+          <li><b>$ref</b> — использовать для схем и для повторяющихся параметров (StudentId, CourseId)</li>
+          <li><b>requestBody</b> — для POST/PUT/PATCH</li>
+          <li><b>responses</b> — минимум 200/201/204 + ошибки 400/401/404/500 для ключевых методов</li>
+          <li><b>security</b> — Bearer JWT (глобально), но <code>/auth/login</code> без security</li>
+          <li><b>pagination</b> — для <code>GET /students</code> и/или <code>GET /courses</code></li>
+          <li><b>examples</b> — хотя бы 1 пример запроса и 1 пример ответа для важных методов</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Критерии оценки (пример)</h3>
+        <table>
+          <tr><th>Баллы</th><th>Критерий</th></tr>
+          <tr><td>5</td><td>15+ операций и корректная структура paths</td></tr>
+          <tr><td>5</td><td>3+ окружения в servers</td></tr>
+          <tr><td>5</td><td>Схемы в components/schemas и активное использование $ref</td></tr>
+          <tr><td>5</td><td>Единый формат ошибок Error и описанные коды 400/401/404/500</td></tr>
+          <tr><td>5</td><td>Security (bearerAuth), login без security, примеры</td></tr>
+          <tr><td>5</td><td>Пагинация/фильтры/сортировка хотя бы для одного списка</td></tr>
+        </table>
+      </div>
+
+      <div class="warn">
+        <b>Как сдавать:</b> прикрепить <code>openapi.yaml</code> (или ссылку на репозиторий) и скриншот/видео, что Swagger Editor не показывает ошибок.
+      </div>
+
+      <hr style="border:none; border-top:1px solid var(--border); margin: 26px 0;" />
+
+      <div class="card">
+        <h3>Стартовый шаблон (можно копировать в Swagger Editor)</h3>
+        <p class="muted">Это базовый каркас. Дополняйте его своими методами и схемами.</p>
+        <pre><code>openapi: 3.0.3
+info:
+  title: Student Course API
+  version: 1.0.0
+  description: Учебное API-first описание
+
+servers:
+  - url: https://api.example.com
+    description: Production
+  - url: https://api-dev.example.com
+    description: Development
+  - url: http://localhost:3000
+    description: Local
+
+tags:
+  - name: Students
+    description: Работа со студентами
+  - name: Courses
+    description: Работа с курсами
+  - name: Auth
+    description: Авторизация
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    StudentId:
+      name: studentId
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+    CourseId:
+      name: courseId
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, example: "validation_error" }
+        message: { type: string, example: "Email is invalid" }
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field: { type: string, example: "email" }
+              issue: { type: string, example: "must be a valid email" }
+
+    Token:
+      type: object
+      required: [accessToken]
+      properties:
+        accessToken: { type: string, example: "eyJhbGciOi..." }
+
+    Student:
+      type: object
+      required: [id, name, email]
+      properties:
+        id: { type: integer, example: 1 }
+        name: { type: string, example: "Иван" }
+        email: { type: string, format: email, example: "ivan@example.com" }
+        age: { type: integer, minimum: 0, example: 21 }
+        createdAt: { type: string, format: date-time }
+
+    StudentCreate:
+      type: object
+      required: [name, email]
+      properties:
+        name: { type: string, minLength: 2 }
+        email: { type: string, format: email }
+        age: { type: integer, minimum: 0 }
+
+    StudentUpdate:
+      allOf:
+        - $ref: '#/components/schemas/StudentCreate'
+
+    Course:
+      type: object
+      required: [id, title]
+      properties:
+        id: { type: integer, example: 10 }
+        title: { type: string, example: "Backend Development" }
+        hours: { type: integer, example: 72 }
+
+security:
+  - bearerAuth: []
+
+paths: {}</code></pre>
+      </div>
+
+      <div class="note">
+        Если хочешь, я могу также собрать “эталонную” спецификацию под это задание (в виде отдельного openapi.yaml),
+        чтобы у тебя был референс для проверки работ студентов.
+      </div>
     </main>
   </div>
 </body>
